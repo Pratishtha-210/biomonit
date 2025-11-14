@@ -69,6 +69,8 @@ const ReactorDetail = () => {
   const reactor = reactorData?.data;
   const latestData = dashboardData?.data?.latest;
   const statistics = reactor?.statistics;
+  console.log("latestData",latestData);
+  console.log("formatted data",formatDate(latestData.dilution.uploaded_at))
 
   return (
     <Box>
@@ -303,7 +305,7 @@ const ReactorDetail = () => {
                   </Grid>
                 </Grid>
                 <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-                  Updated: {formatDate(latestData.dilution.timestamp)}
+                  Updated: {formatDate(latestData.dilution.uploaded_at)}
                 </Typography>
               </CardContent>
             </Card>
