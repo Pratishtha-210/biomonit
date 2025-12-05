@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const reactorRoutes = require('./routes/reactors');
 const dataRoutes = require('./routes/data');
+const dataUpRoutes = require('./routes/dataup');
 const alertSetpointRoutes = require('./routes/alerts');
 const setPointRoutes = require('./routes/setpoints');
 
@@ -36,7 +37,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Compression
 app.use(compression());
 
-// HTTP request logger
+// HTTP request loggerrouter.post('/push-data', dataController.pushDataToDatabase);
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 } else {
@@ -70,6 +71,7 @@ app.use(`/api/${API_VERSION}/reactors`, reactorRoutes);
 app.use(`/api/${API_VERSION}/data`, dataRoutes);
 app.use(`/api/${API_VERSION}/alerts`, alertSetpointRoutes);
 app.use(`/api/${API_VERSION}/setpoints`, setPointRoutes);
+app.use(`/api/${API_VERSION}/dataup`, dataUpRoutes); // push 
 
 // Welcome route
 app.get('/', (req, res) => {
