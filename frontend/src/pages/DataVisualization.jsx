@@ -326,18 +326,35 @@ const DataVisualization = () => {
             </Paper>
           ) : viewMode === 'stack' ? (
             // Stacked View
-            <Grid container spacing={2}>
+            <>
+              {/* Combined Chart */}
+              {selectedFields.length > 1 && (
+              <Box mb={2}>
+                <ProfessionalMultiLineChart
+                  data={currentData}
+                  fields={selectedFields.map((key) => ({
+                    key,
+                    label: availableFields.find((f) => f.key === key)?.label || key,
+                  }))}
+                  title="Combined View"
+                  height={chartHeight}
+                />
+              </Box>
+            )}
+            {/* Individual Charts */}
               {selectedFields.map((fieldKey) => (
-                <Grid item xs={12} key={fieldKey}>
-                  <ProfessionalLineChart
-                    data={currentData}
-                    fieldName={fieldKey}
-                    title={availableFields.find((f) => f.key === fieldKey)?.label}
-                    height={chartHeight}
-                  />
-                </Grid>
+                <Box mb={2}>
+                  <Grid item xs={12} key={fieldKey}>
+                    <ProfessionalLineChart
+                      data={currentData}
+                      fieldName={fieldKey}
+                      title={availableFields.find((f) => f.key === fieldKey)?.label}
+                      height={chartHeight}
+                    />
+                  </Grid>
+                </Box>
               ))}
-            </Grid>
+            </>
           ) : (
             // Grid View
             <>
@@ -365,6 +382,7 @@ const DataVisualization = () => {
                       fieldName={fieldKey}
                       title={availableFields.find((f) => f.key === fieldKey)?.label}
                       height={selectedFields.length === 1 ? chartHeight : chartHeight * 0.7}
+                      width="100%"
                     />
                   </Grid>
                 ))}
