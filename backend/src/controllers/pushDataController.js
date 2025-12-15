@@ -33,15 +33,12 @@ class PushDataController {
       
       if (payload.gas) {
         result = await this.handleGasData(payload.gas);
-      } else if (payload.level_control) {
+      } 
+      if (payload.level_control) {
         result = await this.handleLevelControlData(payload.level_control);
-      } else if (payload.type === 'dilution') {
+      } 
+      if (payload.dilution) {
         result = await this.handleDilutionData(payload);
-      } else {
-        return res.status(400).json({
-          success: false,
-          error: 'Unknown data type. Expected gas, level_control, or dilution data'
-        });
       }
 
       return res.status(200).json({
