@@ -154,30 +154,6 @@ const Login = () => {
             </Button>
           </form>
 
-          {/* Default Credentials Info */}
-          <Box
-            sx={{
-              mt: 3,
-              p: 2,
-              bgcolor: 'info.light',
-              borderRadius: 2,
-              border: '1px solid',
-              borderColor: 'info.main',
-            }}
-          >
-            <Typography variant="caption" display="block" gutterBottom>
-              <strong>Default Admin Credentials:</strong>
-            </Typography>
-            <Typography variant="caption" display="block">
-              Username: <strong>admin</strong>
-            </Typography>
-            <Typography variant="caption" display="block">
-              Password: <strong>Admin@123</strong>
-            </Typography>
-            <Typography variant="caption" display="block" color="error" sx={{ mt: 1 }}>
-              ⚠️ Please change password after first login!
-            </Typography>
-          </Box>
         </Paper>
 
         {/* Footer */}
