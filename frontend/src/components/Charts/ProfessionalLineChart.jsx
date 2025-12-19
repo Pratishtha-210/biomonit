@@ -36,7 +36,7 @@ const ProfessionalLineChart = ({ data, fieldName, title, color = '#1976d2', heig
         fullTimestamp: item.timestamp,
       }));
   }, [data, fieldName]);
-
+  console.log("chart data: ", chartData)
   // Calculate statistics
   const stats = useMemo(() => {
   if (chartData.length === 0) return null;
