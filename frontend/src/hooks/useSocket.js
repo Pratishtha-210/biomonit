@@ -35,14 +35,26 @@ export const useSocket = () => {
     socketRef.current.on('connect', () => {
       console.log('Socket connected:', socketRef.current.id);
       setIsConnected(true);
-      toast.success('Real-time connection established', { autoClose: 2000 });
+      toast.success('Real-time connection established', {
+  toastId: 'socket-connected',
+  autoClose: 2000,
+});
+
     });
 
     socketRef.current.on('disconnect', (reason) => {
-      console.log('Socket disconnected:', reason);
-      setIsConnected(false);
-      toast.warning('Real-time connection lost', { autoClose: 2000 });
-    });
+  console.log('Socket disconnected:', reason);
+  setIsConnected(false);
+
+  // Ignore intentional disconnects (page change / unmount)
+  if (reason === 'io client disconnect') return;
+
+  toast.warning('Real-time connection lost', {
+    toastId: 'socket-disconnected',
+    autoClose: 2000,
+  });
+});
+
 
     socketRef.current.on('connect_error', (error) => {
       console.error('Socket connection error:', error);

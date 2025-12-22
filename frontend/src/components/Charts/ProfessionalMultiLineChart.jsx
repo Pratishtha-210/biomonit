@@ -97,6 +97,7 @@ const MultiLineChart = ({ data, fields, title, height = 400 }) => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="timestamp"
+              reversed
               tick={{ fontSize: 12 }}
               angle={-45}
               textAnchor="end"

@@ -87,6 +87,7 @@ const RealTimeChart = ({ reactorId, dataType, fieldName, title, color = '#1976d2
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="timestamp"
+                reversed
                 tick={{ fontSize: 12 }}
                 angle={-45}
                 textAnchor="end"

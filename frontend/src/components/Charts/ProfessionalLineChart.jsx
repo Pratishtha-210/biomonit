@@ -24,7 +24,6 @@ const ProfessionalLineChart = ({ data, fieldName, title, color = '#1976d2', heig
   // Prepare and decimate chart data for performance
   const chartData = useMemo(() => {
     if (!data || data.length === 0) return [];
-
     // Decimate data if too many points (keep every nth point)
     const maxPoints = 1000;
     const step = Math.max(1, Math.floor(data.length / maxPoints));
@@ -36,6 +35,9 @@ const ProfessionalLineChart = ({ data, fieldName, title, color = '#1976d2', heig
         fullTimestamp: item.timestamp,
       }));
   }, [data, fieldName]);
+  const reversedChartData = useMemo(() => {
+  return [...chartData].reverse();
+}, [chartData]);
 
   // Calculate statistics
   const stats = useMemo(() => {
@@ -95,7 +97,7 @@ const ProfessionalLineChart = ({ data, fieldName, title, color = '#1976d2', heig
       <Card elevation={3} width="100vh">
         <CardContent>
           <Typography variant="h6" fontWeight="bold" mb={2}>
-            {title} klf
+            {title}
           </Typography>
           <Box
             display="flex"
@@ -125,7 +127,7 @@ const ProfessionalLineChart = ({ data, fieldName, title, color = '#1976d2', heig
 
         {/* Chart */}
         <ResponsiveContainer width="100%" height={height}>
-          <RechartsLineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 0 }}>
+          <RechartsLineChart data={reversedChartData} margin={{ top: 5, right: 30, left: 20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
             <XAxis
               dataKey="timestamp"
@@ -158,6 +160,7 @@ const ProfessionalLineChart = ({ data, fieldName, title, color = '#1976d2', heig
               isAnimationActive={false}
             />
              <Brush 
+             data={reversedChartData}
               dataKey="timestamp"
               height={30}
               stroke={color}
@@ -218,6 +221,33 @@ const ProfessionalLineChart = ({ data, fieldName, title, color = '#1976d2', heig
               >
             {showMoreStats ? 'Less' : 'More'}
             </Typography>
+            {showMoreStats && (
+              <Box
+                display="flex"
+                justifyContent="space-around"
+                flexWrap="wrap"
+                gap={2}
+                mt={1}
+              >
+                <Box textAlign="center">
+                  <Typography variant="caption" color="text.secondary">
+                    Std Deviation
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold">
+                    {formatNumber(stats.stdDev, precision)}
+                  </Typography>
+                </Box>
+
+                <Box textAlign="center">
+                  <Typography variant="caption" color="text.secondary">
+                    % Error
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold">
+                    {formatNumber(stats.percentError, 2)}%
+                  </Typography>
+                </Box>
+              </Box>
+            )}
            </Box>
           </Box>
         )}
