@@ -1,5 +1,7 @@
 // src/pages/Alerts.jsx
 
+import Loading from '../components/Common/Loading';
+import { getAllAlerts, getAlerts, acknowledgeMultipleAlerts } from '../api/alerts';
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -19,10 +21,9 @@ import {
   Add as AddIcon,
   CheckCircle as CheckIcon,
 } from '@mui/icons-material';
-import { getAllAlerts, acknowledgeMultipleAlerts } from '../api/alerts';
+//import { getAllAlerts, acknowledgeMultipleAlerts } from '../api/alerts';
 import { getReactors } from '../api/reactors';
 import useAuthStore from '../store/authStore';
-import Loading from '../components/Common/Loading';
 import ErrorMessage from '../components/Common/ErrorMessage';
 import SetPointForm from '../components/Alerts/SetPointForm';
 import AlertList from '../components/Alerts/AlertList';
@@ -34,7 +35,6 @@ const Alerts = () => {
   const [tabValue, setTabValue] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedAlerts, setSelectedAlerts] = useState([]);
-
   // Fetch alerts
   const {
     data: alertsData,
@@ -42,10 +42,59 @@ const Alerts = () => {
     error: alertsError,
     refetch: refetchAlerts,
   } = useQuery({
-    queryKey: ['alerts'],
-    queryFn: () => getAllAlerts(),
-    refetchInterval: 30000, // Refetch every 30 seconds
+    queryKey: ['alerts', user.role, user.assignedReactors],
+    queryFn: async () => {
+      if (user.role === 'admin') {
+        return await getAllAlerts();
+      }
+      else if (user.role === 'normal_user') {
+        // Handle multiple reactors
+        if (!user.assignedReactors || user.assignedReactors.length === 0) {
+          return { success: true, count: 0, data: [] };
+        }
+        
+        // Fetch alerts for all assigned reactors in parallel
+        const alertPromises = user.assignedReactors.map(reactor => 
+          getAlerts(reactor.reactor_id)
+        );
+        
+        // Wait for all requests to complete
+        const allAlertsResponses = await Promise.all(alertPromises);
+        
+        console.log('All alerts responses:', allAlertsResponses);
+        
+        // Merge all alerts from the 'data' property
+        const mergedAlerts = allAlertsResponses.reduce((acc, response) => {
+          if (response && response.data && Array.isArray(response.data)) {
+            return [...acc, ...response.data];
+          }
+          return acc;
+        }, []);
+        
+        console.log('Merged alerts:', mergedAlerts);
+        
+        // Return in the same structure as getAllAlerts
+        return {
+          success: true,
+          count: mergedAlerts.length,
+          data: mergedAlerts
+        };
+      }
+      else if (user.role === 'viewer') {
+        return { success: true, count: 0, data: [] };
+      }
+    },
+    refetchInterval: 30000,
+    enabled: !!user && !!user.role,
   });
+
+  // logs for testing
+  console.log('alertsData structure:', alertsData);
+  console.log('Is alertsData an array?', Array.isArray(alertsData));
+  console.log('alertsData.alerts:', alertsData?.alerts);
+
+
+
 
   // Fetch reactors
   const { data: reactorsData } = useQuery({
@@ -67,11 +116,12 @@ const Alerts = () => {
   });
 
   const alerts = alertsData?.data || [];
+
   const reactors = reactorsData?.data || [];
 
-  const unacknowledgedAlerts = alerts.filter((a) => !a.is_acknowledged);
-  const acknowledgedAlerts = alerts.filter((a) => a.is_acknowledged);
-  const criticalAlerts = alerts.filter((a) => a.severity === 'critical' && !a.is_acknowledged);
+  const unacknowledgedAlerts = alerts.filter(a => !a.is_acknowledged);
+const acknowledgedAlerts = alerts.filter(a => a.is_acknowledged);
+const criticalAlerts = alerts.filter(a => a.severity === "critical" && !a.is_acknowledged);
 
   const handleAcknowledgeSelected = () => {
     if (selectedAlerts.length > 0) {
@@ -79,8 +129,19 @@ const Alerts = () => {
     }
   };
 
-  if (loadingAlerts) return <Loading message="Loading alerts..." />;
-  if (alertsError) return <ErrorMessage message={alertsError.message} onRetry={refetchAlerts} />;
+
+ if (loadingAlerts) return <Loading message="Loading alerts..." />;
+ if (alertsError) return <ErrorMessage message={alertsError.message} onRetry={refetchAlerts} />;
+
+  if (user?.role === "viewer") {
+  return (
+    <Box mt={3} textAlign="center">
+      <Typography variant="h6" color="error.main">
+        You do not have permission to view alerts
+      </Typography>
+    </Box>
+  );
+}
 
   return (
     <Box>

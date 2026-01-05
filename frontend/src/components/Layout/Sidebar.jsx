@@ -31,9 +31,20 @@ const Sidebar = ({ drawerWidth, mobileOpen, handleDrawerToggle }) => {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Reactors', icon: <ScienceIcon />, path: '/reactors' },
-    { text: 'Alerts', icon: <NotificationsIcon />, path: '/alerts' },
+    // { text: 'Alerts', icon: <NotificationsIcon />, path: '/alerts' },
+
     { text: 'Profile', icon: <PersonIcon />, path: '/profile' },
   ];
+  // ADD THIS HERE (INSIDE COMPONENT)
+  if (user?.role !== "viewer") {
+    menuItems.push({
+      text: "Alerts",
+      icon: <NotificationsIcon />,
+      path: "/alerts",
+    });
+  }
+
+  
 
   // Add admin menu item if user is admin
   if (user?.role === 'admin') {

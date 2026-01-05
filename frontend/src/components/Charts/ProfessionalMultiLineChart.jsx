@@ -23,7 +23,8 @@ const MultiLineChart = ({ data, fields, title, height = 400 }) => {
   const precision = usePrecisionStore((state) => state.precision);
   const chartData = data.map((item) => {
     const point = {
-      timestamp: format(new Date(item.timestamp), 'MM/dd HH:mm'),
+      timestamp: format(new Date(item.timestamp), 'MMM dd, yyyy HH:mm:ss'),
+
       fullTimestamp: item.timestamp,
     };
     fields.forEach((field) => {
@@ -92,7 +93,8 @@ const MultiLineChart = ({ data, fields, title, height = 400 }) => {
         <Typography variant="h6" fontWeight="bold" mb={2}>
           {title}
         </Typography>
-        <ResponsiveContainer width="100%" height={height}>
+        <ResponsiveContainer width="100%" height={height} style={{ marginTop: 20 }}>
+
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
@@ -101,7 +103,7 @@ const MultiLineChart = ({ data, fields, title, height = 400 }) => {
               tick={{ fontSize: 12 }}
               angle={-45}
               textAnchor="end"
-              height={80}
+              height={100}
             />
             <YAxis tick={{ fontSize: 12 }} />
             <Tooltip content={<CustomTooltip />} />
