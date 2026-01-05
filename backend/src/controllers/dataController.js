@@ -201,7 +201,9 @@ exports.getDataByTimeRange = async (req, res, next) => {
 
     const endTime = new Date();
     const startTime = new Date(endTime - hours * 60 * 60 * 1000);
-
+    console.log("reactor Id: ", reactorId)
+    console.log("start time: ", startTime)
+    console.log("end Time: ", endTime)
     // Get data from all three types
     const dilutionData = await DilutionData.getByReactor(reactorId, {
       startTime,
